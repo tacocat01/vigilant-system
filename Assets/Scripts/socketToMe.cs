@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Linq;
 
 
 public class socketToMe : MonoBehaviour
@@ -10,38 +11,12 @@ public class socketToMe : MonoBehaviour
     // get the robot object
     public GameObject robot;
 
+    // make a stop watch to measure the time
+    private System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+
     void Start () {
         StartCoroutine(PostJSON ("{\"data\":\"90 90 90 90 90 90\"}"));
-        // digital starting angles
-        float[] start_digital_angles = new float[7];
-        int count = 0;
-        foreach (Transform child in robot.transform)
-        {
-
-            float rad = child.transform.localRotation.eulerAngles.x;
-            // get he local angle
-            // float local_rad = rad - child.transform.rotation.eulerAngles.x;
-
-
-            if(count == 0) {
-                rad = child.transform.localRotation.eulerAngles.y;
-            }
-            else if(count == 6) {
-                rad = child.transform.localRotation.eulerAngles.z;
-            }
-            else if(count == 7) {
-                rad = child.transform.localRotation.eulerAngles.z;
-            }
-            // string degree = ((rad * 180 / Mathf.PI)%360).ToString();
-            
-
-            start_digital_angles[count] = rad;
-            // last_angle = rad;
-            count++;
-        }
-
-        Debug.Log(string.Join( ",", start_digital_angles));
-        
+        stopWatch.Start();
     }
 
     private void OnDestroy () {
@@ -59,6 +34,8 @@ public class socketToMe : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+
         // string list 
         string[] list = new string[7];
         // get each line of the robot's joint angle
@@ -86,10 +63,17 @@ public class socketToMe : MonoBehaviour
             list[count] = degree ;
             // last_angle = rad;
             count--;
+            // if (count < 0) {
+            //     break;
+            // }
         }
-
-        Debug.Log(string.Join( ",", list));
-        // StartCoroutine(PostJSON ("{\"data\":\"" + angle_str.join() + "\"}"));
+        // get the 1st  6 elements of the list
+        // list.take(6);
+        if(stopWatch.ElapsedMilliseconds > 1000) {
+            Debug.Log(string.Join( ",", list.Take(6)));
+            StartCoroutine(PostJSON ("{\"data\":\"" + string.Join( " ", list.Take(6))+ "\"}"));
+            stopWatch.Restart();
+        }
     }
 
     private static IEnumerator PostJSON(string jsonString) {
