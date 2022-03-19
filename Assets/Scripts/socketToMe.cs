@@ -45,32 +45,45 @@ public class socketToMe : MonoBehaviour
         list[4] = "90";
         list[5] = "90";
         // get each line of the robot's joint angle
-        int count = -1;
+        int count = 5;
         float last_angle = 0;
         foreach (Transform child in robot.transform)
         {
             if (count == -1) {
-                count ++;
-                continue;
+                break;
             }
-            float rad = child.transform.localRotation.eulerAngles.z;
+            float rad = child.transform.rotation.eulerAngles.x;
             // get he local angle
             // float local_rad = rad - child.transform.rotation.eulerAngles.x;
+            /*
+                5: end effector
+                4: wrist
+                3: top elbow
+                2: middle elbow
+                1: bottom elbow
+                0: base
+            */
 
-
-            if(count == 0) {
-                rad = child.transform.localRotation.eulerAngles.y;
+            if(count == 0 || count == 4) {
+                rad = child.transform.rotation.eulerAngles.y;
             }
             else if(count == 5) {
-                rad = child.transform.localRotation.eulerAngles.y;
+
+                // rad = child.transform.localRotation.eulerAngles.y;
+                rad = 0;
             }
-        
-            string degree = ((rad * 180 / Mathf.PI)%180 + 90 ).ToString();
+
+
+            string degree = ((rad + 90) % 360).ToString();
             
             // if (count == 6)
-            list[count] = degree ;
+            if (count != 5){
+                list[count] = degree ;
+            } else {
+                list[count] = "90";
+            }
             // last_angle = rad;
-            count ++;
+            count --;
             // if (count < 0) {
             //     break;
             // }
@@ -79,8 +92,8 @@ public class socketToMe : MonoBehaviour
         // reverse the array
 
         if(stopWatch.ElapsedMilliseconds > 1000) {
-            Debug.Log(string.Join( ",", list.Reverse().Take(6)));
-            StartCoroutine(PostJSON ("{\"data\":\"" + string.Join( " ", list.Reverse())+ "\"}"));
+            Debug.Log(string.Join( ",", list));
+            StartCoroutine(PostJSON ("{\"data\":\"" + string.Join( " ", list)+ "\"}"));
             stopWatch.Restart();
         }
     }
