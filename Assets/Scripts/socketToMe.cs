@@ -80,7 +80,7 @@ public class socketToMe : MonoBehaviour
 
         if(stopWatch.ElapsedMilliseconds > 1000) {
             Debug.Log(string.Join( ",", list.Reverse().Take(6)));
-            StartCoroutine(PostJSON ("{\"data\":\"" + string.Join( " ", list.Reverse())+ "\"}"));
+            //StartCoroutine(PostJSON ("{\"data\":\"" + string.Join( " ", list.Reverse())+ "\"}"));
             stopWatch.Restart();
         }
     }
