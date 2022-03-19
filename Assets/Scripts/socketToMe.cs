@@ -4,7 +4,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Linq;
-
+using System;
 
 public class socketToMe : MonoBehaviour
 {
@@ -37,13 +37,23 @@ public class socketToMe : MonoBehaviour
 
 
         // string list 
-        string[] list = new string[7];
+        string[] list = new string[6];
+        list[0] = "90";
+        list[1] = "90";
+        list[2] = "90";
+        list[3] = "90";
+        list[4] = "90";
+        list[5] = "90";
         // get each line of the robot's joint angle
-        int count = 6;
+        int count = -1;
         float last_angle = 0;
         foreach (Transform child in robot.transform)
         {
-            float rad = child.transform.localRotation.eulerAngles.x;
+            if (count == -1) {
+                count ++;
+                continue;
+            }
+            float rad = child.transform.localRotation.eulerAngles.z;
             // get he local angle
             // float local_rad = rad - child.transform.rotation.eulerAngles.x;
 
@@ -51,27 +61,26 @@ public class socketToMe : MonoBehaviour
             if(count == 0) {
                 rad = child.transform.localRotation.eulerAngles.y;
             }
-            else if(count == 6) {
-                rad = child.transform.localRotation.eulerAngles.z;
+            else if(count == 5) {
+                rad = child.transform.localRotation.eulerAngles.y;
             }
-            else if(count == 7) {
-                rad = child.transform.localRotation.eulerAngles.z;
-            }
-            string degree = ((rad * 180 / Mathf.PI)%90  + 90 ).ToString();
+        
+            string degree = ((rad * 180 / Mathf.PI)%180 + 90 ).ToString();
             
-
+            // if (count == 6)
             list[count] = degree ;
             // last_angle = rad;
-            count--;
+            count ++;
             // if (count < 0) {
             //     break;
             // }
         }
-        // get the 1st  6 elements of the list
-        // list.take(6);
+
+        // reverse the array
+
         if(stopWatch.ElapsedMilliseconds > 1000) {
-            Debug.Log(string.Join( ",", list.Take(6)));
-            StartCoroutine(PostJSON ("{\"data\":\"" + string.Join( " ", list.Take(6))+ "\"}"));
+            Debug.Log(string.Join( ",", list.Reverse().Take(6)));
+            StartCoroutine(PostJSON ("{\"data\":\"" + string.Join( " ", list.Reverse())+ "\"}"));
             stopWatch.Restart();
         }
     }
