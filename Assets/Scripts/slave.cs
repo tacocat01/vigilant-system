@@ -17,6 +17,6 @@ public class slave : MonoBehaviour
     void Update()
     {
         // update the slave object angle based on the master object angle, but the opposite direction
-        slave_object.transform.rotation = Quaternion.Euler(0, 0, -master.transform.rotation.eulerAngles.z);
+        slave_object.transform.rotation = Quaternion.Euler( master.transform.rotation.eulerAngles.x, master.transform.rotation.eulerAngles.y, -master.transform.rotation.eulerAngles.z);
     }
 }
