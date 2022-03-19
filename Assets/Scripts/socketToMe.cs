@@ -12,6 +12,36 @@ public class socketToMe : MonoBehaviour
 
     void Start () {
         StartCoroutine(PostJSON ("{\"data\":\"90 90 90 90 90 90\"}"));
+        // digital starting angles
+        float[] start_digital_angles = new float[7];
+        int count = 0;
+        foreach (Transform child in robot.transform)
+        {
+
+            float rad = child.transform.localRotation.eulerAngles.x;
+            // get he local angle
+            // float local_rad = rad - child.transform.rotation.eulerAngles.x;
+
+
+            if(count == 0) {
+                rad = child.transform.localRotation.eulerAngles.y;
+            }
+            else if(count == 6) {
+                rad = child.transform.localRotation.eulerAngles.z;
+            }
+            else if(count == 7) {
+                rad = child.transform.localRotation.eulerAngles.z;
+            }
+            // string degree = ((rad * 180 / Mathf.PI)%360).ToString();
+            
+
+            start_digital_angles[count] = rad;
+            // last_angle = rad;
+            count++;
+        }
+
+        Debug.Log(string.Join( ",", start_digital_angles));
+        
     }
 
     private void OnDestroy () {
@@ -32,7 +62,7 @@ public class socketToMe : MonoBehaviour
         // string list 
         string[] list = new string[7];
         // get each line of the robot's joint angle
-        int count = 0;
+        int count = 6;
         float last_angle = 0;
         foreach (Transform child in robot.transform)
         {
@@ -50,12 +80,12 @@ public class socketToMe : MonoBehaviour
             else if(count == 7) {
                 rad = child.transform.localRotation.eulerAngles.z;
             }
-            string degree = ((rad * 180 / Mathf.PI)%360).ToString();
+            string degree = ((rad * 180 / Mathf.PI)%90  + 90 ).ToString();
             
 
-            list[child.GetSiblingIndex()] = degree;
+            list[count] = degree ;
             // last_angle = rad;
-            count++;
+            count--;
         }
 
         Debug.Log(string.Join( ",", list));
